@@ -7,9 +7,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
+import org.apache.commons.lang3.math.NumberUtils;
+
 import fr.diginamic.recensement.entites.Recensement;
 import fr.diginamic.recensement.entites.Region;
 import fr.diginamic.recensement.entites.Ville;
+import fr.diginamic.recensement.exceptions.RecensementException;
 import fr.diginamic.recensement.services.comparators.EnsemblePopComparateur;
 
 /**
@@ -21,10 +24,13 @@ import fr.diginamic.recensement.services.comparators.EnsemblePopComparateur;
 public class RechercheRegionsPlusPeuplees extends MenuService {
 
 	@Override
-	public void traiter(Recensement recensement, Scanner scanner) {
+	public void traiter(Recensement recensement, Scanner scanner) throws RecensementException {
 
 		System.out.println("Veuillez saisir un nombre de régions:");
 		String nbRegionsStr = scanner.nextLine();
+		if (!NumberUtils.isDigits(nbRegionsStr)) {
+			throw new RecensementException("Votre saisie du nombre de régions n'est pas un nombre");
+		}
 		int nbRegions = Integer.parseInt(nbRegionsStr);
 
 		// On récupére la liste des villes du recensement
@@ -34,6 +40,10 @@ public class RechercheRegionsPlusPeuplees extends MenuService {
 		// - Clé: nom de la région
 		// - Valeur: instance de région
 		Map<String, Region> mapRegions = new HashMap<>();
+
+		if (nbRegions > mapRegions.size()) {
+			throw new RecensementException("Le nombre de régions saisi est supérieur au nombre de régions existantes");
+		}
 
 		// On parcourt les 35800 villes, une par une
 		for (Ville ville : villes) {
